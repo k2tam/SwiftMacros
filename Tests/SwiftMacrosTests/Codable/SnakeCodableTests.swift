@@ -56,14 +56,14 @@ func assertExpansion(
             """
             @SnakeCodable
             struct User {
-                var userName: String
-                var age: Int
+                var userName: String?
+                var age: Int?
             }
             """,
             expandedSource: """
             struct User {
-                var userName: String
-                var age: Int
+                var userName: String?
+                var age: Int?
 
                 enum CodingKeys: String, CodingKey {
                     case userName = "user_name"
@@ -72,14 +72,14 @@ func assertExpansion(
 
                 init(from decoder: Decoder) throws {
                     let container = try decoder.container(keyedBy: CodingKeys.self)
-                    self.userName = try container.decode(String.self, forKey: .userName)
-                    self.age = try container.decode(Int.self, forKey: .age)
+                    self.userName = try? container.decodeIfPresent(String.self, forKey: .userName)
+                    self.age = try? container.decodeIfPresent(Int.self, forKey: .age)
                 }
 
                 func encode(to encoder: Encoder) throws {
                     var container = encoder.container(keyedBy: CodingKeys.self)
-                    try container.encode(self.userName, forKey: .userName)
-                    try container.encode(self.age, forKey: .age)
+                    try container.encodeIfPresent(self.userName, forKey: .userName)
+                    try container.encodeIfPresent(self.age, forKey: .age)
                 }
             }
 
@@ -98,7 +98,7 @@ func assertExpansion(
             """
             @SnakeCodable
             struct User {
-                @CodedAt("id") var userId: Int
+                @CodedAt("id") var userId: Int?
                 @Default(18) var age: Int
                 var nickName: String?
                 @IgnoreCoding var cache: [String] = []
@@ -108,7 +108,7 @@ func assertExpansion(
             """,
             expandedSource: """
             struct User {
-                var userId: Int
+                var userId: Int?
                 var age: Int
                 var nickName: String?
                 var cache: [String] = []
@@ -123,14 +123,14 @@ func assertExpansion(
 
                 init(from decoder: Decoder) throws {
                     let container = try decoder.container(keyedBy: CodingKeys.self)
-                    self.userId = try container.decode(Int.self, forKey: .userId)
+                    self.userId = try? container.decodeIfPresent(Int.self, forKey: .userId)
                     self.age = (try? container.decodeIfPresent(Int.self, forKey: .age)) ?? 18
                     self.nickName = try? container.decodeIfPresent(String.self, forKey: .nickName)
                 }
 
                 func encode(to encoder: Encoder) throws {
                     var container = encoder.container(keyedBy: CodingKeys.self)
-                    try container.encode(self.userId, forKey: .userId)
+                    try container.encodeIfPresent(self.userId, forKey: .userId)
                     try container.encode(self.age, forKey: .age)
                     try container.encodeIfPresent(self.nickName, forKey: .nickName)
                 }
@@ -167,6 +167,39 @@ func assertExpansion(
                     message: "Property 'name' cần khai báo type rõ ràng (vd: var name: String?)",
                     line: 1,
                     column: 1
+                )
+            ]
+        )
+        #else
+        // macros are only supported when running tests for the host platform
+        #endif
+    }
+
+    @Test func nonOptionalWithoutDefaultEmitsError() throws {
+        #if canImport(SwiftMacrosMacros)
+        assertExpansion(
+            """
+            @SnakeCodable
+            struct User {
+                var email: String
+                @Default(0) var age: Int
+            }
+            """,
+            expandedSource: """
+            struct User {
+                var email: String
+                var age: Int
+            }
+
+            extension User: Codable {
+            }
+            """,
+            diagnostics: [
+                DiagnosticSpec(
+                    message: "Property 'email' phải là optional (String?) hoặc có @Default(...) để không lỗi khi server không trả giá trị",
+                    line: 3,
+                    column: 16,
+                    fixIts: [FixItSpec(message: "Đổi thành String?")]
                 )
             ]
         )

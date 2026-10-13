@@ -25,13 +25,13 @@ import SwiftMacros
 
 | JSON value | Swift declaration |
 |---|---|
-| always present | `var x: T` (throws if missing) |
-| may be missing / `null` | `var x: T?` |
+| default — any value | `var x: T?` (missing / `null` / wrong type → `nil`) |
 | may be missing, want fallback | `@Default(v) var x: T` |
 | nested object | a separate `@SnakeCodable struct` (or any `Codable`) |
 | array of objects | `[NestedType]` |
 
-4. Always write an explicit type annotation (`var x: Int`, not `var x = 0`) — otherwise compile error.
+4. Every property must be `T?` or have `@Default` — a plain `var x: T` is a compile error (fix-it adds `?`). Decoding never throws because of a missing or bad field.
+5. Always write an explicit type annotation (`var x: Int`, not `var x = 0`) — otherwise compile error.
 
 ### Example
 
@@ -44,19 +44,19 @@ import SwiftMacros
 ```swift
 @SnakeCodable
 struct User {
-    @CodedAt("id") var userId: Int
-    var userName: String
+    @CodedAt("id") var userId: Int?
+    var userName: String?
     var avatarURL: String?
     @Default(18) var age: Int          // not in JSON -> 18
-    var profile: Profile
+    var profile: Profile?
     @Default([]) var tags: [String]
     @IgnoreCoding var cache: [String] = []
-    var displayName: String { "@\(userName)" } // computed: ignored
+    var displayName: String { "@\(userName ?? "")" } // computed: ignored
 }
 
 @SnakeCodable
 struct Profile {
-    var fullName: String
+    var fullName: String?
     @CodedAt("address_2") var address2: String?
 }
 
@@ -66,7 +66,7 @@ let user = try JSONDecoder().decode(User.self, from: data)
 ## Gotchas
 
 - **Do not** set `decoder.keyDecodingStrategy = .convertFromSnakeCase` (or the encoder equivalent) — keys are already snake_case; leave the default strategy.
-- Optional fields decode with `try?`: a **wrong type becomes `nil` silently**, not an error.
+- Fields decode with `try?`: a **wrong type becomes `nil` silently**, not an error.
 - Encoding omits `nil` optionals (key absent, not `null`).
 - Generated members are `internal` — not usable for `public` types across modules.
 - Generated `init(from:)` removes the struct's implicit memberwise init; write one manually if needed.

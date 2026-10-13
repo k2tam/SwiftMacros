@@ -10,9 +10,9 @@
 <text x="42" y="56" text-anchor="end" fill="#6c6c75">1</text>
 <text x="56" y="56" fill="#dfdfe0"><tspan fill="#fc5fa3">struct</tspan>&#160;<tspan fill="#5dd8ff">User</tspan>:&#160;<tspan fill="#5dd8ff">Codable</tspan>&#160;{</text>
 <text x="42" y="78" text-anchor="end" fill="#6c6c75">2</text>
-<text x="56" y="78" fill="#dfdfe0">&#160;&#160;&#160;&#160;<tspan fill="#fc5fa3">var</tspan>&#160;userId:&#160;<tspan fill="#5dd8ff">Int</tspan></text>
+<text x="56" y="78" fill="#dfdfe0">&#160;&#160;&#160;&#160;<tspan fill="#fc5fa3">var</tspan>&#160;userId:&#160;<tspan fill="#5dd8ff">Int</tspan>?</text>
 <text x="42" y="100" text-anchor="end" fill="#6c6c75">3</text>
-<text x="56" y="100" fill="#dfdfe0">&#160;&#160;&#160;&#160;<tspan fill="#fc5fa3">var</tspan>&#160;userName:&#160;<tspan fill="#5dd8ff">String</tspan></text>
+<text x="56" y="100" fill="#dfdfe0">&#160;&#160;&#160;&#160;<tspan fill="#fc5fa3">var</tspan>&#160;userName:&#160;<tspan fill="#5dd8ff">String</tspan>?</text>
 <text x="42" y="122" text-anchor="end" fill="#6c6c75">4</text>
 <text x="56" y="122" fill="#dfdfe0">&#160;&#160;&#160;&#160;<tspan fill="#fc5fa3">var</tspan>&#160;avatarURL:&#160;<tspan fill="#5dd8ff">String</tspan>?</text>
 <text x="42" y="144" text-anchor="end" fill="#6c6c75">5</text>
@@ -40,13 +40,13 @@
 <text x="42" y="386" text-anchor="end" fill="#6c6c75">16</text>
 <text x="56" y="386" fill="#dfdfe0">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<tspan fill="#fc5fa3">let</tspan>&#160;c&#160;=&#160;<tspan fill="#fc5fa3">try</tspan>&#160;decoder<tspan fill="#a167e6">.container</tspan>(keyedBy:&#160;<tspan fill="#5dd8ff">CodingKeys</tspan><tspan fill="#a167e6">.self</tspan>)</text>
 <text x="42" y="408" text-anchor="end" fill="#6c6c75">17</text>
-<text x="56" y="408" fill="#dfdfe0">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;userId&#160;=&#160;<tspan fill="#fc5fa3">try</tspan>&#160;c<tspan fill="#a167e6">.decode</tspan>(<tspan fill="#5dd8ff">Int</tspan><tspan fill="#a167e6">.self</tspan>,&#160;forKey:&#160;<tspan fill="#a167e6">.userId</tspan>)</text>
+<text x="56" y="408" fill="#dfdfe0">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;userId&#160;=&#160;<tspan fill="#fc5fa3">try</tspan>?&#160;c<tspan fill="#a167e6">.decodeIfPresent</tspan>(<tspan fill="#5dd8ff">Int</tspan><tspan fill="#a167e6">.self</tspan>,&#160;forKey:&#160;<tspan fill="#a167e6">.userId</tspan>)</text>
 <text x="42" y="430" text-anchor="end" fill="#6c6c75">18</text>
-<text x="56" y="430" fill="#dfdfe0">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;userName&#160;=&#160;<tspan fill="#fc5fa3">try</tspan>&#160;c<tspan fill="#a167e6">.decode</tspan>(<tspan fill="#5dd8ff">String</tspan><tspan fill="#a167e6">.self</tspan>,&#160;forKey:&#160;<tspan fill="#a167e6">.userName</tspan>)</text>
+<text x="56" y="430" fill="#dfdfe0">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;userName&#160;=&#160;<tspan fill="#fc5fa3">try</tspan>?&#160;c<tspan fill="#a167e6">.decodeIfPresent</tspan>(<tspan fill="#5dd8ff">String</tspan><tspan fill="#a167e6">.self</tspan>,&#160;forKey:&#160;<tspan fill="#a167e6">.userName</tspan>)</text>
 <text x="42" y="452" text-anchor="end" fill="#6c6c75">19</text>
-<text x="56" y="452" fill="#dfdfe0">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;avatarURL&#160;=&#160;<tspan fill="#fc5fa3">try</tspan>?&#160;c<tspan fill="#a167e6">.decode</tspan>(<tspan fill="#5dd8ff">String</tspan><tspan fill="#a167e6">.self</tspan>,&#160;forKey:&#160;<tspan fill="#a167e6">.avatarURL</tspan>)</text>
+<text x="56" y="452" fill="#dfdfe0">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;avatarURL&#160;=&#160;<tspan fill="#fc5fa3">try</tspan>?&#160;c<tspan fill="#a167e6">.decodeIfPresent</tspan>(<tspan fill="#5dd8ff">String</tspan><tspan fill="#a167e6">.self</tspan>,&#160;forKey:&#160;<tspan fill="#a167e6">.avatarURL</tspan>)</text>
 <text x="42" y="474" text-anchor="end" fill="#6c6c75">20</text>
-<text x="56" y="474" fill="#dfdfe0">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;age&#160;=&#160;(<tspan fill="#fc5fa3">try</tspan>?&#160;c<tspan fill="#a167e6">.decode</tspan>(<tspan fill="#5dd8ff">Int</tspan><tspan fill="#a167e6">.self</tspan>,&#160;forKey:&#160;<tspan fill="#a167e6">.age</tspan>))&#160;??&#160;<tspan fill="#d0bf69">18</tspan></text>
+<text x="56" y="474" fill="#dfdfe0">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;age&#160;=&#160;(<tspan fill="#fc5fa3">try</tspan>?&#160;c<tspan fill="#a167e6">.decodeIfPresent</tspan>(<tspan fill="#5dd8ff">Int</tspan><tspan fill="#a167e6">.self</tspan>,&#160;forKey:&#160;<tspan fill="#a167e6">.age</tspan>))&#160;??&#160;<tspan fill="#d0bf69">18</tspan></text>
 <text x="42" y="496" text-anchor="end" fill="#6c6c75">21</text>
 <text x="56" y="496" fill="#dfdfe0">&#160;&#160;&#160;&#160;}</text>
 <text x="42" y="518" text-anchor="end" fill="#6c6c75">22</text>
@@ -56,9 +56,9 @@
 <text x="42" y="562" text-anchor="end" fill="#6c6c75">24</text>
 <text x="56" y="562" fill="#dfdfe0">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<tspan fill="#fc5fa3">var</tspan>&#160;c&#160;=&#160;encoder<tspan fill="#a167e6">.container</tspan>(keyedBy:&#160;<tspan fill="#5dd8ff">CodingKeys</tspan><tspan fill="#a167e6">.self</tspan>)</text>
 <text x="42" y="584" text-anchor="end" fill="#6c6c75">25</text>
-<text x="56" y="584" fill="#dfdfe0">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<tspan fill="#fc5fa3">try</tspan>&#160;c<tspan fill="#a167e6">.encode</tspan>(userId,&#160;forKey:&#160;<tspan fill="#a167e6">.userId</tspan>)</text>
+<text x="56" y="584" fill="#dfdfe0">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<tspan fill="#fc5fa3">try</tspan>&#160;c<tspan fill="#a167e6">.encodeIfPresent</tspan>(userId,&#160;forKey:&#160;<tspan fill="#a167e6">.userId</tspan>)</text>
 <text x="42" y="606" text-anchor="end" fill="#6c6c75">26</text>
-<text x="56" y="606" fill="#dfdfe0">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<tspan fill="#fc5fa3">try</tspan>&#160;c<tspan fill="#a167e6">.encode</tspan>(userName,&#160;forKey:&#160;<tspan fill="#a167e6">.userName</tspan>)</text>
+<text x="56" y="606" fill="#dfdfe0">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<tspan fill="#fc5fa3">try</tspan>&#160;c<tspan fill="#a167e6">.encodeIfPresent</tspan>(userName,&#160;forKey:&#160;<tspan fill="#a167e6">.userName</tspan>)</text>
 <text x="42" y="628" text-anchor="end" fill="#6c6c75">27</text>
 <text x="56" y="628" fill="#dfdfe0">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<tspan fill="#fc5fa3">try</tspan>&#160;c<tspan fill="#a167e6">.encodeIfPresent</tspan>(avatarURL,&#160;forKey:&#160;<tspan fill="#a167e6">.avatarURL</tspan>)</text>
 <text x="42" y="650" text-anchor="end" fill="#6c6c75">28</text>

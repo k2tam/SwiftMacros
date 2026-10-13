@@ -1,4 +1,5 @@
 import SwiftCompilerPlugin
+import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
@@ -29,7 +30,7 @@ public struct SnakeCodableMacro: MemberMacro, ExtensionMacro {
         conformingTo protocols: [TypeSyntax],
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
-        let fields = try fields(of: declaration)
+        guard let fields = try fields(of: declaration, in: context) else { return [] }
 
         let cases = fields.map { "case \($0.name) = \"\($0.key)\"" }.joined(separator: "\n")
         let codingKeys = """
@@ -41,10 +42,8 @@ public struct SnakeCodableMacro: MemberMacro, ExtensionMacro {
         let decodeLines = fields.map { f -> String in
             if let def = f.defaultValue {
                 return "self.\(f.name) = (try? container.decodeIfPresent(\(f.type).self, forKey: .\(f.name))) ?? \(def)"
-            } else if f.isOptional {
-                return "self.\(f.name) = try? container.decodeIfPresent(\(f.type).self, forKey: .\(f.name))"
             } else {
-                return "self.\(f.name) = try container.decode(\(f.type).self, forKey: .\(f.name))"
+                return "self.\(f.name) = try? container.decodeIfPresent(\(f.type).self, forKey: .\(f.name))"
             }
         }.joined(separator: "\n")
 
@@ -87,8 +86,13 @@ public struct SnakeCodableMacro: MemberMacro, ExtensionMacro {
     }
 
     // MARK: Phân tích property
-    private static func fields(of declaration: some DeclGroupSyntax) throws -> [Field] {
+    /// Trả về nil nếu có property không optional mà thiếu @Default (đã báo lỗi kèm fix-it).
+    private static func fields(
+        of declaration: some DeclGroupSyntax,
+        in context: some MacroExpansionContext
+    ) throws -> [Field]? {
         var result: [Field] = []
+        var hasError = false
 
         for member in declaration.memberBlock.members {
             guard let variable = member.decl.as(VariableDeclSyntax.self),
@@ -122,10 +126,27 @@ public struct SnakeCodableMacro: MemberMacro, ExtensionMacro {
             let defaultValue = attribute("Default", in: variable)
                 .flatMap { $0.arguments?.as(LabeledExprListSyntax.self)?.first?.expression.trimmedDescription }
 
+            // Server không trả / trả null -> phải ra nil hoặc default, không được throw
+            if !isOptional && defaultValue == nil {
+                let optionalType = OptionalTypeSyntax(wrappedType: typeSyntax.trimmed)
+                    .with(\.leadingTrivia, typeSyntax.leadingTrivia)
+                    .with(\.trailingTrivia, typeSyntax.trailingTrivia)
+                context.diagnose(Diagnostic(
+                    node: typeSyntax,
+                    message: SnakeCodableDiagnostic.notOptional(name: name, type: type),
+                    fixIt: FixIt(
+                        message: SnakeCodableFixIt(message: "Đổi thành \(type)?"),
+                        changes: [.replace(oldNode: Syntax(typeSyntax), newNode: Syntax(optionalType))]
+                    )
+                ))
+                hasError = true
+                continue
+            }
+
             result.append(Field(name: name, type: type, isOptional: isOptional,
                                 key: key, defaultValue: defaultValue))
         }
-        return result
+        return hasError ? nil : result
     }
 
     private static func attribute(_ name: String, in variable: VariableDeclSyntax) -> AttributeSyntax? {
@@ -153,4 +174,22 @@ public struct SnakeCodableMacro: MemberMacro, ExtensionMacro {
         }
         return result
     }
+}
+
+private enum SnakeCodableDiagnostic: DiagnosticMessage {
+    case notOptional(name: String, type: String)
+
+    var message: String {
+        switch self {
+        case let .notOptional(name, type):
+            return "Property '\(name)' phải là optional (\(type)?) hoặc có @Default(...) để không lỗi khi server không trả giá trị"
+        }
+    }
+    var diagnosticID: MessageID { MessageID(domain: "SnakeCodable", id: "notOptional") }
+    var severity: DiagnosticSeverity { .error }
+}
+
+private struct SnakeCodableFixIt: FixItMessage {
+    let message: String
+    var fixItID: MessageID { MessageID(domain: "SnakeCodable", id: "makeOptional") }
 }

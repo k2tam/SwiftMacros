@@ -16,9 +16,9 @@
 <text x="42" y="122" text-anchor="end" fill="#6c6c75">4</text>
 <text x="56" y="122" fill="#dfdfe0"><tspan fill="#fc5fa3">struct</tspan>&#160;<tspan fill="#5dd8ff">User</tspan>&#160;{</text>
 <text x="42" y="144" text-anchor="end" fill="#6c6c75">5</text>
-<text x="56" y="144" fill="#dfdfe0">&#160;&#160;&#160;&#160;<tspan fill="#fd8f3f">@CodedAt</tspan>(<tspan fill="#fc6a5d">&quot;id&quot;</tspan>)&#160;<tspan fill="#fc5fa3">var</tspan>&#160;userId:&#160;<tspan fill="#5dd8ff">Int</tspan></text>
+<text x="56" y="144" fill="#dfdfe0">&#160;&#160;&#160;&#160;<tspan fill="#fd8f3f">@CodedAt</tspan>(<tspan fill="#fc6a5d">&quot;id&quot;</tspan>)&#160;<tspan fill="#fc5fa3">var</tspan>&#160;userId:&#160;<tspan fill="#5dd8ff">Int</tspan>?</text>
 <text x="42" y="166" text-anchor="end" fill="#6c6c75">6</text>
-<text x="56" y="166" fill="#dfdfe0">&#160;&#160;&#160;&#160;<tspan fill="#fc5fa3">var</tspan>&#160;userName:&#160;<tspan fill="#5dd8ff">String</tspan></text>
+<text x="56" y="166" fill="#dfdfe0">&#160;&#160;&#160;&#160;<tspan fill="#fc5fa3">var</tspan>&#160;userName:&#160;<tspan fill="#5dd8ff">String</tspan>?</text>
 <text x="42" y="188" text-anchor="end" fill="#6c6c75">7</text>
 <text x="56" y="188" fill="#dfdfe0">&#160;&#160;&#160;&#160;<tspan fill="#fc5fa3">var</tspan>&#160;avatarURL:&#160;<tspan fill="#5dd8ff">String</tspan>?</text>
 <text x="42" y="210" text-anchor="end" fill="#6c6c75">8</text>

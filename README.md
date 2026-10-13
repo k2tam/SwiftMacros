@@ -39,7 +39,7 @@ import SwiftMacros
 
 @SnakeCodable
 struct User {
-    var userName: String      // "user_name"
+    var userName: String?     // "user_name"
     var avatarURL: String?    // "avatar_url"
 }
 ```
@@ -51,17 +51,19 @@ struct User {
 | `@CodedAt("id")` | Chỉ định key JSON riêng (khi key không theo snake_case) |
 | `@Default(18)` | Thiếu key hoặc decode lỗi → dùng giá trị mặc định |
 | `@IgnoreCoding` | Bỏ qua property, không encode/decode |
-| `Type?` | Optional: thiếu key hoặc `null` → `nil` |
+| `Type?` | Optional: thiếu key, `null` hoặc sai kiểu → `nil` |
 
 Computed property tự động bị bỏ qua.
+
+> Macro chạy an toàn: mọi property phải là optional (`Type?`) hoặc có `@Default`. Server không trả key, trả `null` hay sai kiểu → `nil`/default, model **không bao giờ decode lỗi**. Khai báo `var x: Int` (không `?`, không `@Default`) sẽ báo lỗi compile kèm fix-it "Đổi thành Int?".
 
 ## 3. Ví dụ đầy đủ
 
 ```swift
 @SnakeCodable
 struct User {
-    var userName: String
-    @CodedAt("id") var userId: Int
+    var userName: String?
+    @CodedAt("id") var userId: Int?
     @Default(18) var age: Int
     var avatarURL: String?
     @IgnoreCoding var cache: [String] = []
