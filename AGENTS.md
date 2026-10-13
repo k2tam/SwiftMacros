@@ -76,6 +76,11 @@ let user = try JSONDecoder().decode(User.self, from: data)
 
 ## Layout
 
-- `Sources/SwiftMacros/SwiftMacros.swift` — public macro declarations
-- `Sources/SwiftMacrosMacros/SwiftMacrosMacro.swift` — implementation (`SnakeCodableMacro`, key logic in `snakeCase`)
+Each macro group gets its own folder, mirrored across the targets.
+
+- `Sources/SwiftMacros/Codable/SnakeCodable.swift` — public macro declarations
+- `Sources/SwiftMacrosMacros/Codable/SnakeCodableMacro.swift` — implementation (`SnakeCodableMacro`, `MarkerMacro`, key logic in `snakeCase`)
+- `Sources/SwiftMacrosMacros/Plugin.swift` — `CompilerPlugin`; register every new macro in `providingMacros`
+- `Sources/SwiftMacrosMacros/MacroError.swift` — shared error type
 - `Sources/SwiftMacrosClient/main.swift` — runnable example (`swift run SwiftMacrosClient`)
+- `Tests/SwiftMacrosTests/Codable/` — tests per group

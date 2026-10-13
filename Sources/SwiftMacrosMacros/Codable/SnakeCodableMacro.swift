@@ -3,11 +3,6 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-struct MacroError: Error, CustomStringConvertible {
-    let description: String
-    init(_ description: String) { self.description = description }
-}
-
 // Marker dùng chung cho @CodedAt, @Default, @IgnoreCoding: không sinh gì
 public struct MarkerMacro: PeerMacro {
     public static func expansion(
@@ -158,9 +153,4 @@ public struct SnakeCodableMacro: MemberMacro, ExtensionMacro {
         }
         return result
     }
-}
-
-@main
-struct MyMacrosPlugin: CompilerPlugin {
-    let providingMacros: [Macro.Type] = [SnakeCodableMacro.self, MarkerMacro.self]
 }
