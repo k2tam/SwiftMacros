@@ -2,6 +2,17 @@
 
 Macro Swift tự sinh `Codable` cho JSON snake_case — kèm cách dùng với app **JSON Export**.
 
+<table>
+  <tr>
+    <th>Trước — viết tay</th>
+    <th>Sau — <code>@SnakeCodable</code></th>
+  </tr>
+  <tr>
+    <td valign="top"><img src="docs/images/before.svg" alt="Codable viết tay: CodingKeys, init(from:), encode(to:) — 30 dòng"></td>
+    <td valign="top"><img src="docs/images/after.svg" alt="Cùng model với @SnakeCodable — 10 dòng"></td>
+  </tr>
+</table>
+
 ## Cài đặt (Swift Package Manager)
 
 ```swift
