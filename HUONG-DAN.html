@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hướng dẫn SnakeCodable</title>
+<style>
+:root{--bg:#fafaf7;--fg:#1d1d1f;--mut:#6b6b70;--card:#fff;--bd:#e4e4de;--ac:#f05138;--code:#16181d;--codefg:#e8e8ea;--k:#ff7ab2;--s:#fc6a5d;--c:#7f8c98}
+@media(prefers-color-scheme:dark){:root{--bg:#141416;--fg:#ececee;--mut:#9a9aa2;--card:#1d1d20;--bd:#303034}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:820px;margin:0 auto;padding:40px 16px 80px}
+h1{font-size:2rem;margin:0 0 4px}
+h1 span{color:var(--ac)}
+.sub{color:var(--mut);margin:0 0 32px}
+h2{font-size:1.15rem;margin:0 0 12px;display:flex;gap:10px;align-items:center}
+h2 i{font-style:normal;background:var(--ac);color:#fff;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:.85rem;flex:none}
+section{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px;margin-bottom:16px}
+pre{background:var(--code);color:var(--codefg);border-radius:10px;padding:14px 16px;overflow:auto;font:13.5px/1.55 ui-monospace,Menlo,monospace;margin:10px 0 0}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:color-mix(in srgb,var(--ac) 12%,transparent);padding:1px 6px;border-radius:5px}
+pre code{background:none;padding:0;font-size:inherit}
+.k{color:var(--k)}.s{color:var(--s)}.c{color:var(--c)}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
+th{color:var(--mut);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}
+tr:last-child td{border:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+.note{border-left:3px solid var(--ac);padding:6px 12px;color:var(--mut);margin-top:12px;font-size:.93rem}
+footer{text-align:center;color:var(--mut);font-size:.85rem;margin-top:24px}
+footer b{color:var(--ac)}
+ol{padding-left:20px;margin:0}li{margin:4px 0}
+</style>
+</head>
+<body>
+<main>
+<h1><span>@</span>SnakeCodable</h1>
+<p class="sub">Macro Swift tự sinh <code>Codable</code> cho JSON snake_case — kèm cách dùng với app JSON Export.</p>
+
+<section>
+<h2><i>1</i>Macro làm gì?</h2>
+<p style="margin:0">Gắn <code>@SnakeCodable</code> lên <code>struct</code>/<code>class</code>, macro tự sinh <code>CodingKeys</code>, <code>init(from:)</code>, <code>encode(to:)</code> và conform <code>Codable</code>. Tên <code>camelCase</code> tự đổi thành <code>snake_case</code>.</p>
+<pre><code><span class="k">@SnakeCodable</span>
+<span class="k">struct</span> User {
+    <span class="k">var</span> userName: String          <span class="c">// "user_name"</span>
+    <span class="k">var</span> avatarURL: String?        <span class="c">// "avatar_url"</span>
+}</code></pre>
+</section>
+
+<section>
+<h2><i>2</i>Các attribute phụ</h2>
+<table>
+<tr><th>Attribute</th><th>Tác dụng</th></tr>
+<tr><td><code>@CodedAt("id")</code></td><td>Chỉ định key JSON riêng (khi key không theo snake_case)</td></tr>
+<tr><td><code>@Default(18)</code></td><td>Thiếu key hoặc decode lỗi → dùng giá trị mặc định</td></tr>
+<tr><td><code>@IgnoreCoding</code></td><td>Bỏ qua property, không encode/decode</td></tr>
+<tr><td><code>Type?</code></td><td>Optional: thiếu key hoặc <code>null</code> → <code>nil</code></td></tr>
+</table>
+<div class="note">Computed property tự động bị bỏ qua.</div>
+</section>
+
+<section>
+<h2><i>3</i>Ví dụ đầy đủ</h2>
+<div class="grid">
+<pre><code><span class="k">@SnakeCodable</span>
+<span class="k">struct</span> User {
+  <span class="k">var</span> userName: String
+  <span class="k">@CodedAt</span>(<span class="s">"id"</span>) <span class="k">var</span> userId: Int
+  <span class="k">@Default</span>(<span class="s">18</span>) <span class="k">var</span> age: Int
+  <span class="k">var</span> avatarURL: String?
+  <span class="k">@IgnoreCoding var</span> cache: [String] = []
+}</code></pre>
+<pre><code>{
+  <span class="s">"user_name"</span>: <span class="s">"tam"</span>,
+  <span class="s">"id"</span>: 42,
+  <span class="s">"avatar_url"</span>: null
+}
+<span class="c">// thiếu "age" → age = 18</span></code></pre>
+</div>
+<pre><code><span class="k">let</span> user = <span class="k">try</span> JSONDecoder().decode(User.<span class="k">self</span>, from: data)
+<span class="k">let</span> out  = <span class="k">try</span> JSONEncoder().encode(user)</code></pre>
+</section>
+
+<section>
+<h2><i>4</i>Dùng với JSON Export (sinh model tự động)</h2>
+<ol>
+<li>Mở project <code>JSONExport-SwiftMacros/JSONExport.xcodeproj</code>, chạy app.</li>
+<li>Dán JSON vào ô bên trái, đặt <b>Root class name</b>.</li>
+<li>Chọn ngôn ngữ: <b>Swift - Struct - SnakeCodable (Macro)</b> (app chọn sẵn mặc định).</li>
+<li>Bấm <b>Generate</b>, rồi <b>Save</b> hoặc <b>Copy</b> file <code>.swift</code> vào project.</li>
+</ol>
+<pre><code><span class="c">// JSON: { "user_name": "tam", "userId": 42 }</span>
+<span class="k">import</span> Foundation
+<span class="k">import</span> SwiftMacros
+
+<span class="k">@SnakeCodable</span>
+<span class="k">struct</span> User {
+    <span class="k">var</span> userName: String?              <span class="c">// khớp snake_case → không cần @CodedAt</span>
+    <span class="k">@CodedAt</span>(<span class="s">"userId"</span>) <span class="k">var</span> userId: Int?  <span class="c">// key lệch → tự thêm @CodedAt</span>
+}</code></pre>
+<div class="note">App chỉ thêm <code>@CodedAt</code> khi key JSON khác kết quả đổi snake_case của tên property. Mọi property sinh ra là optional.</div>
+</section>
+
+<section>
+<h2><i>5</i>Lưu ý nhanh</h2>
+<ul style="margin:0;padding-left:20px">
+<li>Quy tắc đổi tên: <code>avatarURL → avatar_url</code>, <code>userURLString → user_url_string</code>.</li>
+<li>Macro cần Swift 6.x và <code>swift-syntax</code> 604+ (đã khai báo trong Package.swift).</li>
+<li>Xem code sinh ra: chuột phải <code>@SnakeCodable</code> ▸ <b>Expand Macro</b>.</li>
+<li>Lỗi "macro not trusted"? Vào <b>Report navigator</b> hoặc build lại và bấm Trust.</li>
+</ul>
+</section>
+<footer>Created by <b>k2tam</b></footer>
+</main>
+</body>
+</html>
